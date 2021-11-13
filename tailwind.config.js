@@ -7,7 +7,7 @@ module.exports = {
       body: ['Poppins', 'system-ui', 'sans-serif'],
     },
     colors: {
-      meteor: {
+      primary: {
         50: '#fcf9f3',
         100: '#faf2e8',
         200: '#f2dfc4',
@@ -19,7 +19,7 @@ module.exports = {
         800: '#794c0c',
         900: '#633e0a',
       },
-      dodger: {
+      secondary: {
         50: '#f5f9fe',
         100: '#ebf2fd',
         200: '#cde0fa',
