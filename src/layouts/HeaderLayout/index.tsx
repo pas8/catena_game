@@ -4,7 +4,7 @@ import Button from '../../components/Button';
 const HeaderLayout: FC = ({ children }) => {
   return (
     <>
-      <header className={'header flex justify-between px-6 py-4 p'}>
+      <header className={'header flex justify-between px-6 py-4 p bg-primary-600 bg-opacity-10'}>
         <div className={'flex items-center	gap-4 '}>
           <h2 className={'uppercase text-4xl	font-bold dark:text-primary-200'}>Catena game</h2>
         </div>

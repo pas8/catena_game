@@ -1,11 +1,11 @@
 import { FC, MouseEventHandler, useRef } from 'react';
-const Button: FC<{ _class?: string; onClick?: MouseEventHandler<HTMLButtonElement>; isContained?: boolean }> = ({
-  children,
-  _class,
-  onClick,
-  isContained = false,
-  ...props
-}) => {
+const Button: FC<{
+  _class?: string;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  isContained?: boolean;
+  isSecondary?: boolean;
+  rounded?: string;
+}> = ({ children, _class, onClick, isContained = false, isSecondary = false, rounded = 'full', ...props }) => {
   const rippleRef = useRef({} as HTMLSpanElement);
 
   const on_click: MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -23,17 +23,16 @@ const Button: FC<{ _class?: string; onClick?: MouseEventHandler<HTMLButtonElemen
 
     onClick && onClick(e);
   };
+  const variant = isSecondary ? 'secondary' : 'primary';
 
   return (
     <button
-      className={`${
-        _class || ''
-      }rounded-full   py-3 px-6 p relative overflow-hidden text-xl duration-500  ring-primary-400 ring-opacity-50
+      className={`rounded-${rounded}   py-3 px-6 p relative overflow-hidden text-xl duration-500  ring-${variant}-400 ring-opacity-50
         ${
           isContained
-            ? 'bg-gradient-to-r from-primary-900 to-dark-42 hover:from-dark-80  ring-2  hover:to-primary-600  hover:border-primary-300  dark:text-white-42 hover:via-primary-800  border-2  border-primary-600'
-            : 'border-4 border-primary-400  dark:text-white-42 hover:bg-primary-900  bg-opacity-20 ring-2'
-        }`}
+            ? `bg-gradient-to-r from-${variant}-900 to-dark-42 hover:from-dark-80  ring-2  hover:to-${variant}-600  hover:border-${variant}-300  dark:text-white-42 hover:via-${variant}-800  border-2  border-${variant}-600`
+            : `border-4 border-${variant}-400  dark:text-white-42 hover:bg-${variant}-900  bg-opacity-20 ring-2`
+        } ${_class || ''}`}
       {...props}
       onClick={on_click}
     >
