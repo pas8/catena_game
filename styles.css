@@ -1,0 +1,35 @@
+@keyframes ripple_animate {
+  0% {
+    width: 0px;
+    height: 0px;
+  }
+  100% {
+    width: 420px;
+    height: 420px;
+    opacity: 0;
+  }
+}
+
+.ripple {
+  background: currentColor;
+  position: absolute;
+
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple_animate 0.8s linear infinite;
+}
+.preview_svg {
+  filter: drop-shadow(0px 0px 42px #846ec86d);
+}
+
+.confiti_container {
+  position: fixed;
+  inset: 0;
+}
+.confiti_container > div {
+  width: 100%;
+  /* position: fixed; */
+  margin-left: 40%;
+  height: 100%;
+  /* z-index: 10000000; */
+}
