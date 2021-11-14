@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import Ground from '../src/components/Ground';
 import { generate_board } from '../src/utils/generate_board';
 import dynamic from 'next/dynamic';
+import Head from 'next/head';
 import Confetti from 'react-dom-confetti';
 import { useRouter } from 'next/dist/client/router';
 
@@ -325,6 +326,9 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>Catena</title>
+      </Head>
       {!!is_wasted && (
         <div
           className={
