@@ -24,20 +24,22 @@ const Button: FC<{
     onClick && onClick(e);
   };
   const variant = isSecondary ? 'secondary' : 'primary';
+  const _rounded = `rounded-${rounded}`;
 
   return (
     <button
-      className={`rounded-${rounded}   py-3 px-6 p relative overflow-hidden text-xl duration-500  ring-${variant}-400 ring-opacity-50
+      className={`${_rounded}   py-4 px-6 p relative overflow-hidden text-xl duration-500  ring-${variant}-400 ring-opacity-80 ring-inset
         ${
           isContained
             ? `bg-gradient-to-r from-${variant}-900 to-dark-42 hover:from-dark-80  ring-2  hover:to-${variant}-600  hover:border-${variant}-300  text-white-42 hover:via-${variant}-800  border-2  border-${variant}-600`
-            : `border-4 border-${variant}-400  text-white-42 hover:bg-${variant}-900  bg-opacity-20 ring-2`
+            : `border-3 border-white-42 border-opacity-80  text-white-42 hover:bg-${variant}-900  bg-${variant}-400   bg-opacity-20 ring-4 `
         } ${_class || ''}`}
       {...props}
       onClick={on_click}
     >
       {children}
       <span className={'ripple'} ref={rippleRef} style={{ display: 'none' }}></span>
+     
     </button>
   );
 };
