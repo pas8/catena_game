@@ -12,6 +12,16 @@ const _App = ({ Component, pageProps }: AppProps) => {
       <ComposeLayouts layouts={[ProgressLayout, HeaderLayout, ToastifyLayout]}>
         <Component {...pageProps} />
       </ComposeLayouts>
+      <span
+        className={
+          'from-secondary-900 hover:to-secondary-600   hover:border-secondary-300 hover:via-secondary-800  border-secondary-600 bg-secondary-400  hover:bg-secondary-900   ring-secondary-400'
+        }
+      ></span>
+        <span
+        className={
+          'from-primary-900 hover:to-primary-600 hover:border-primary-300 hover:via-primary-800 border-primary-600 bg-primary-400 hover:bg-primary-900 ring-primary-400'
+        }
+      ></span>
     </div>
   );
 };

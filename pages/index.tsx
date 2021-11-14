@@ -323,7 +323,7 @@ const Home: NextPage = () => {
     const s = ~~((timer_propertyies.left / 1000) % 60);
     return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
   };
-
+  const [is_full_screen, set_is_full_screen] = useState(false);
   return (
     <>
       <Head>
@@ -420,7 +420,9 @@ const Home: NextPage = () => {
                   'flex flex-col gap-4 bg-secondary-200 bg-opacity-5 p-4 ring-2 ring-secondary-600 ring-opacity-40  rounded-xl'
                 }
               >
-                <h2 className={'font-bold	text-secondary-200 text-5xl'}>id: {connect_room_id}</h2>
+                <h2 className={'font-bold	text-secondary-200 text-5xl flex items-center justify-between'}>
+                  <span>id: {connect_room_id}</span>{' '}
+                </h2>
                 <div className={'w-96 h-96 '}>
                   <Ground {...default_props} />
                 </div>
@@ -429,11 +431,30 @@ const Home: NextPage = () => {
 
             {state.is_game_started && (
               <div
-                className={
-                  'flex flex-col gap-4 bg-secondary-600 bg-opacity-10 p-4 ring-2 ring-secondary-600 ring-opacity-40  rounded-xl'
-                }
+                className={`flex flex-col gap-4  p-4 ring-2 ring-secondary-600 ring-opacity-40    ${
+                  is_full_screen ? 'inset-0 fixed z-40 bg-dark-42' : 'bg-secondary-600 bg-opacity-10 rounded-xl'
+                } `}
               >
-                <h2 className={'font-bold	text-secondary-200 text-5xl'}>id: {room_id}</h2>
+                <h2 className={'font-bold	text-secondary-200 text-5xl flex items-center justify-between'}>
+                  <span>id: {room_id} </span>{' '}
+                  <Button
+                    isContained
+                    isSecondary
+                    onClick={() => {
+                      set_is_full_screen((p) => !p);
+                    }}
+                  >
+                    <svg className={'h-full w-6 '} viewBox='0 0 24 24' fill={'currentColor'}>
+                      <path
+                        d={
+                          is_full_screen
+                            ? 'M22 3.41 16.71 8.7 20 12h-8V4l3.29 3.29L20.59 2 22 3.41zM3.41 22l5.29-5.29L12 20v-8H4l3.29 3.29L2 20.59 3.41 22z'
+                            : 'M21 11V3h-8l3.29 3.29-10 10L3 13v8h8l-3.29-3.29 10-10z'
+                        }
+                      ></path>
+                    </svg>
+                  </Button>
+                </h2>
                 <div className={'flex flex-col gap-2'}>
                   {state.is_timer_started ? (
                     <div
@@ -457,7 +478,7 @@ const Home: NextPage = () => {
 
                           setState({ ...state, is_timer_started: true, interval });
                         }}
-                        rounded={'3xl'}
+                        rounded={'2xl'}
                       >
                         &#187;
                       </Button>
@@ -531,6 +552,7 @@ const Home: NextPage = () => {
                   <Board
                     count_of_each_team_fields={state.count_of_each_team_fields}
                     board={state.board}
+                    is_full_screen={is_full_screen}
                     room_id={room_id}
                     set_winner={set_winner}
                     winner={winner}

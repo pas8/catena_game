@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import DeathIcon from '../../utils/get_death_icon';
 import { use_field_validation } from '../../utils/use_field_validation';
 
 const Ground: FC<{ ground_count: number; teams: { [key: string]: string }; ground_arr: string[] }> = ({
@@ -23,13 +24,17 @@ const Ground: FC<{ ground_count: number; teams: { [key: string]: string }; groun
               return (
                 <div
                   key={index + field}
+                  className={'flex items-center justify-center'}
                   style={{
                     background,
+
                     width: 100 / ground_count + '%',
                     aspectRatio: '1',
                     height: 'min-content',
                   }}
-                ></div>
+                >
+                  {field === 'DEATH' && <DeathIcon _className={'w-full p-2'} />}
+                </div>
               );
             })}
           </div>

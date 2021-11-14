@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { client } from '../../../pages';
 import { use_field_validation } from '../../utils/use_field_validation';
 
@@ -12,7 +12,7 @@ const Board: FC<{
   on_click_of_death: () => void;
   winner: any;
   set_winner: any;
-
+  is_full_screen: boolean;
   count_of_each_team_fields: number;
   teams: { [key: string]: string };
 }> = ({
@@ -22,13 +22,13 @@ const Board: FC<{
   teams,
   winner,
   set_winner,
+  is_full_screen,
   count_of_each_team_fields,
   activated_fields,
   ground_arr,
   on_click_of_death,
   on_click_of_placeholder,
 }) => {
-
   Object.keys(teams).map((key) => {
     const indexed_with_keys_arr = ground_arr.map((__, idx) => (key === __ ? idx : __));
     const value = indexed_with_keys_arr.filter((__) => !isNaN(+__));
@@ -38,14 +38,23 @@ const Board: FC<{
 
     return [key, value];
   });
+  const ref = useRef(null as any);
+  const [height, set_height] = useState(80);
 
-
+  useEffect(() => {
+    if (is_full_screen && !!ref?.current?.offsetHeight && height === 80) {
+      set_height(ref?.current?.offsetHeight / ground_count - 5);
+    }
+  }, [ref, is_full_screen,height]);
   return (
     <div
-      className={' bg-dark-42 bg-opacity-60 p-2 ring-2 ring-primary-400 ring-opacity-20  '}
-      style={{ height: 'min-content', aspectRatio: '1' }}
+      ref={ref}
+      className={` bg-dark-42 bg-opacity-60  ring-2 ring-primary-400 ring-opacity-20  ${
+        is_full_screen ? 'p-0' : 'p-2'
+      }`}
+      style={{ height: 'min-content ', flexGrow: 1 }}
     >
-      <div className={'flex flex-col gap-2 '}>
+      <div className={'flex flex-col gap-2 p-0 '}>
         {Array.from({ length: ground_count }, (__, idx) => (
           <div key={idx + 'row'} className={'flex gap-2 '}>
             {Array.from({ length: ground_count }, (_, i) => {
@@ -65,16 +74,26 @@ const Board: FC<{
                 return brightness > 155;
               };
               const is_color_light = is_active && get_is_color_light(background as string);
+              const is_death = _field === 'DEATH';
 
+              const styling = is_full_screen
+                ? { height }
+                : {
+                    minWidth: 80,
+                    minHeight: 100,
+                    maxWidth: 80 / ground_count + 'vw',
+                    aspectRatio: '1',
+                  };
               return (
                 <button
                   onClick={() => {
+                    if (is_active) return;
                     // const count_of_each_team_fields;
 
                     if (_field === 'PLACEHOLDER') {
                       on_click_of_placeholder();
                     }
-                    if (_field === 'DEATH') {
+                    if (is_death) {
                       on_click_of_death();
                     }
                     client.send(
@@ -85,10 +104,10 @@ const Board: FC<{
                     );
                   }}
                   style={{
+                    ...styling,
                     background,
-                    minWidth: 100,
+
                     width: 100 / ground_count + '%',
-                    aspectRatio: '1',
                   }}
                   key={index + field}
                   className={`ring-primary-200  ring-opacity-40 p-1    ${
@@ -99,7 +118,7 @@ const Board: FC<{
                       : 'text-dark-42'
                   }   ring-2 `}
                 >
-                  <h6 className={' font-semibold text-xl  capitalize '} style={{ wordBreak: 'break-word' }}>
+                  <h6 className={' font-semibold text-xl  capitalize  '} style={{ wordBreak: 'break-word' }}>
                     {!is_active && field}
                   </h6>
                 </button>
