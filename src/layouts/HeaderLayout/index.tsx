@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { useRouter } from 'next/dist/client/router';
+import dynamic from 'next/dynamic';
+const Text = dynamic(() => import('../../components/HeaderText'), { ssr: false });
 
 const HeaderLayout: FC = ({ children }) => {
   const { reload, push, query } = useRouter();
@@ -7,7 +9,6 @@ const HeaderLayout: FC = ({ children }) => {
 
   return (
     <>
-    
       <header
         className={
           'header flex justify-between px-6 py-4 p bg-secondary-400 bg-opacity-10 fixed right-0 left-0 z-20  backdrop-blur-md backdrop-filter '
@@ -28,7 +29,7 @@ const HeaderLayout: FC = ({ children }) => {
               />
             </g>
           </svg>
-          Catena game
+          <Text />
         </button>
         <div className={'flex items-center	gap-3 '}>
           <button

@@ -4,8 +4,9 @@ const Button: FC<{
   onClick?: MouseEventHandler<HTMLButtonElement>;
   isContained?: boolean;
   isSecondary?: boolean;
+  p?: string;
   rounded?: string;
-}> = ({ children, _class, onClick, isContained = false, isSecondary = false, rounded = 'full', ...props }) => {
+}> = ({ children, _class, onClick, isContained = false, isSecondary = false, p, rounded = 'full', ...props }) => {
   const rippleRef = useRef({} as HTMLSpanElement);
 
   const on_click: MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -25,10 +26,11 @@ const Button: FC<{
   };
   const variant = isSecondary ? 'secondary' : 'primary';
   const _rounded = `rounded-${rounded}`;
+  const padding = p || ' py-4 px-6 p';
 
   return (
     <button
-      className={`${_rounded}   py-4 px-6 p relative overflow-hidden text-xl duration-500  ring-${variant}-400 ring-opacity-80 ring-inset
+      className={`${_rounded} ${padding}   relative overflow-hidden text-xl duration-500  ring-${variant}-400 ring-opacity-80 ring-inset
         ${
           isContained
             ? `bg-gradient-to-r from-${variant}-900 to-dark-42 hover:from-dark-80  ring-2  hover:to-${variant}-600  hover:border-${variant}-300  text-white-42 hover:via-${variant}-800  border-2  border-${variant}-600`
@@ -39,7 +41,6 @@ const Button: FC<{
     >
       {children}
       <span className={'ripple'} ref={rippleRef} style={{ display: 'none' }}></span>
-     
     </button>
   );
 };

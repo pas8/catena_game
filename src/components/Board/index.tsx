@@ -45,12 +45,12 @@ const Board: FC<{
     if (is_full_screen && !!ref?.current?.offsetHeight && height === 80) {
       set_height(ref?.current?.offsetHeight / ground_count - 5);
     }
-  }, [ref, is_full_screen,height]);
+  }, [ref, is_full_screen, height]);
   return (
     <div
       ref={ref}
       className={` bg-dark-42 bg-opacity-60  ring-2 ring-primary-400 ring-opacity-20  ${
-        is_full_screen ? 'p-0' : 'p-2'
+        is_full_screen ? 'p-0 overflow-hidden rounded-xl' : 'p-2'
       }`}
       style={{ height: 'min-content ', flexGrow: 1 }}
     >
@@ -110,7 +110,7 @@ const Board: FC<{
                     width: 100 / ground_count + '%',
                   }}
                   key={index + field}
-                  className={`ring-primary-200  ring-opacity-40 p-1    ${
+                  className={`ring-primary-200  ring-opacity-40 p-1  ${is_full_screen ? 'ring-inset' : ''}  ${
                     !is_active
                       ? 'hover:bg-primary-200  hover:text-dark-42 text-primary-200 '
                       : !is_color_light
