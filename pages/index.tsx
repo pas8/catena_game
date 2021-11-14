@@ -15,7 +15,7 @@ import { useRouter } from 'next/dist/client/router';
 const Board = dynamic(() => import('../src/components/Board'), {});
 
 // export const client = new W3CWebSocket('ws://127.0.0.1:8000 ');
-export const client = new W3CWebSocket('wss://catenagame.herokuapp.com');
+export const client = new W3CWebSocket('ws://catenagame.herokuapp.com');
 
 const Home: NextPage = () => {
   const { reload } = useRouter();
@@ -52,6 +52,7 @@ const Home: NextPage = () => {
     count_of_each_team_fields: 8,
     team_move_order: [] as string[],
     percent_of_teams_fields: 60,
+    is_death_field_includes: false,
     is_game_in_creating_process: false,
     teams: {
       meteor: '#daa55b',
@@ -73,8 +74,7 @@ const Home: NextPage = () => {
     const ground_arr = [
       ...teams_fields_arr,
       ...Array(all_ground_fields_count - teams_fields_arr.length - 1).fill(PLACEHOLDER),
-      DEATH,
-    ];
+    ].concat(state.is_death_field_includes ? DEATH : PLACEHOLDER);
 
     //@ts-ignore
     const random_ground_arr = ground_arr.randomize();
@@ -431,12 +431,14 @@ const Home: NextPage = () => {
 
             {state.is_game_started && (
               <div
-                className={`flex flex-col gap-4  p-4 ring-2 ring-secondary-600 ring-opacity-40    ${
-                  is_full_screen ? 'inset-0 fixed z-40 bg-dark-42' : 'bg-secondary-600 bg-opacity-10 rounded-xl'
+                className={`flex flex-col  p-4 ring-2 ring-secondary-600 ring-opacity-40    ${
+                  is_full_screen
+                    ? 'inset-0 fixed z-40 bg-dark-42 gap-2'
+                    : 'bg-secondary-600 bg-opacity-10 rounded-xl gap-4 '
                 } `}
               >
-                <h2 className={'font-bold	text-secondary-200 text-5xl flex items-center justify-between'}>
-                  <span>id: {room_id} </span>{' '}
+                <h2 className={'font-bold	text-secondary-200 text-4xl flex items-center justify-between'}>
+                  <span className={'bg-secondary-200 bg-opacity-20 p-2 rounded-xl'}>id: {room_id} </span>{' '}
                   <Button
                     isContained
                     isSecondary
@@ -458,19 +460,38 @@ const Home: NextPage = () => {
                 <div className={'flex flex-col gap-2'}>
                   {state.is_timer_started ? (
                     <div
-                      className={
-                        'flex items-center bg-secondary-200 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40  p-2 justify-between rounded-2xl  '
-                      }
+                      className={`flex items-center   justify-between ${
+                        is_full_screen
+                          ? ''
+                          : ' p-2 rounded-2xl bg-secondary-200 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40'
+                      }  `}
                     >
-                      <div className={'flex gap-2 flex-col'}>
-                        <h2 className={'font-bold	text-secondary-200 text-2xl'}>
-                          Team: {timer_propertyies.team_move_name}
+                      <div
+                        className={`flex ${
+                          is_full_screen
+                            ? 'mb-2 m gap-4 bg-primary-200 bg-opacity-20 p-2 rounded-xl'
+                            : 'flex-col  gap-2'
+                        }`}
+                      >
+                        <h2
+                          className={`font-bold	 ${
+                            is_full_screen ? 'text-primary-200 text-4xl' : 'text-secondary-200 text-2xl '
+                          }`}
+                        >
+                          Team: {timer_propertyies.team_move_name},
                         </h2>
-                        <h2 className={'font-bold	text-secondary-200 text-2xl'}>Left: {get_time_left()}</h2>
+                        <h2
+                          className={`font-bold	 ${
+                            is_full_screen ? 'text-primary-200 text-4xl' : 'text-secondary-200 text-2xl '
+                          }`}
+                        >
+                          Left: {get_time_left()}
+                        </h2>
                       </div>
                       <Button
-                        isSecondary
-                        _class={'text-4xl font-bold'}
+                        isSecondary={!is_full_screen}
+                        p={'p py-2 px-4 '}
+                        _class={'text-4xl font-bold '}
                         onClick={() => {
                           clearInterval(state.interval);
                           set_next_team_move();
@@ -480,13 +501,15 @@ const Home: NextPage = () => {
                         }}
                         rounded={'2xl'}
                       >
-                        &#187;
+                        <svg viewBox='0 0 24 24' className={'w-10 h-10'} fill={'currentcolor'}>
+                          <path d='M16.01 11H4v2h12.01v3L20 12l-3.99-4z'></path>
+                        </svg>
                       </Button>
                     </div>
                   ) : (
                     <div
                       className={
-                        'flex gap-2 flex-col bg-primary-100 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40  p-2 justify-center rounded-2xl  '
+                        'flex gap-2 flex-col bg-secondary-100 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40  p-2 justify-center rounded-2xl  '
                       }
                     >
                       <h2 className={'font-bold	text-secondary-100 text-3xl'}>Chouse order of team moving:</h2>
@@ -623,7 +646,10 @@ const Home: NextPage = () => {
                         max: 10,
                       },
                     ].map(({ key, title, ...props }) => (
-                      <div className={'flex flex-col gap-1 border-b-2 border-secondary-300 pb-4'} key={key}>
+                      <div
+                        className={'flex flex-col gap-1 border-b-2 border-secondary-300 pb-4 border-opacity-40'}
+                        key={key}
+                      >
                         <h4 className={'text-secondary-100 text-2xl font-bold rounded-md'}>{title}</h4>
                         <input
                           type={'range'}
@@ -634,6 +660,17 @@ const Home: NextPage = () => {
                         />
                       </div>
                     ))}
+                    <div className={'flex  gap-4 items-center border-b-2 border-secondary-300 pb-4 border-opacity-40'}>
+                      <input
+                        className={'transform scale-150 '}
+                        type={'checkbox'}
+                        checked={state.is_death_field_includes}
+                        onChange={({ target: { checked } }) =>
+                          setState((state) => ({ ...state, is_death_field_includes: checked }))
+                        }
+                      />
+                      <h4 className={'text-secondary-100 text-2xl font-bold rounded-md'}>Is death field includes?</h4>
+                    </div>
 
                     <div className={'flex flex-col gap-2'}>
                       <h4 className={'text-secondary-100 text-2xl font-bold'}>Teams</h4>

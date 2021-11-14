@@ -8,7 +8,7 @@ import ToastifyLayout from '../src/layouts/ToastifyLayout';
 
 const _App = ({ Component, pageProps }: AppProps) => {
   return (
-    <div className='dark:bg-dark-42  min-h-screen '>
+    <div className='dark:bg-dark-42  min-h-screen w-min min-w-full '>
       <ComposeLayouts layouts={[ProgressLayout, HeaderLayout, ToastifyLayout]}>
         <Component {...pageProps} />
       </ComposeLayouts>
@@ -19,7 +19,7 @@ const _App = ({ Component, pageProps }: AppProps) => {
       ></span>
         <span
         className={
-          'from-primary-900 hover:to-primary-600 hover:border-primary-300 hover:via-primary-800 border-primary-600 bg-primary-400 hover:bg-primary-900 ring-primary-400'
+          'from-primary-900 hover:to-primary-600 hover:border-primary-300 hover:via-primary-800 border-primary-600 bg-primary-400 hover:bg-primary-900 ring-primary-400 mb-2 m overflow-hidden'
         }
       ></span>
     </div>
