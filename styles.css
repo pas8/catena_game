@@ -22,3 +22,14 @@
   filter: drop-shadow(0px 0px 42px #846ec86d);
 }
 
+.confiti_container {
+  position: fixed;
+  inset: 0;
+}
+.confiti_container > div {
+  width: 100%;
+  /* position: fixed; */
+  margin-left: 40%;
+  height: 100%;
+  /* z-index: 10000000; */
+}

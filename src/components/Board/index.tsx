@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { client } from '../../../pages';
 import { use_field_validation } from '../../utils/use_field_validation';
 
@@ -10,26 +10,48 @@ const Board: FC<{
   activated_fields: number[];
   on_click_of_placeholder: () => void;
   on_click_of_death: () => void;
+  winner: any;
+  set_winner: any;
+
+  count_of_each_team_fields: number;
   teams: { [key: string]: string };
 }> = ({
   board,
   ground_count,
   room_id,
   teams,
+  winner,
+  set_winner,
+  count_of_each_team_fields,
   activated_fields,
   ground_arr,
   on_click_of_death,
   on_click_of_placeholder,
 }) => {
+
+  Object.keys(teams).map((key) => {
+    const indexed_with_keys_arr = ground_arr.map((__, idx) => (key === __ ? idx : __));
+    const value = indexed_with_keys_arr.filter((__) => !isNaN(+__));
+
+    const actived_team_filds = activated_fields.filter((__) => value.includes(__));
+    if (actived_team_filds.length === count_of_each_team_fields && !winner) set_winner(key);
+
+    return [key, value];
+  });
+
+
   return (
-    <div className={' bg-dark-42 bg-opacity-60 p-2 ring-2 ring-primary-400 ring-opacity-20  '} style={{ height: 'min-content', aspectRatio: '1' }}>
+    <div
+      className={' bg-dark-42 bg-opacity-60 p-2 ring-2 ring-primary-400 ring-opacity-20  '}
+      style={{ height: 'min-content', aspectRatio: '1' }}
+    >
       <div className={'flex flex-col gap-2 '}>
         {Array.from({ length: ground_count }, (__, idx) => (
           <div key={idx + 'row'} className={'flex gap-2 '}>
             {Array.from({ length: ground_count }, (_, i) => {
               const index = idx * ground_count + i;
               const field: any = board[index];
-const _field = ground_arr[index]
+              const _field = ground_arr[index];
               const is_active = activated_fields.includes(index);
               const background = is_active ? use_field_validation(_field, teams) : undefined;
 
@@ -47,13 +69,13 @@ const _field = ground_arr[index]
               return (
                 <button
                   onClick={() => {
-                    if(_field === 'PLACEHOLDER') {
-                      on_click_of_placeholder()
+                    // const count_of_each_team_fields;
 
-                    } 
-                    if(_field === 'DEATH') {
-
-                      on_click_of_death()
+                    if (_field === 'PLACEHOLDER') {
+                      on_click_of_placeholder();
+                    }
+                    if (_field === 'DEATH') {
+                      on_click_of_death();
                     }
                     client.send(
                       JSON.stringify({
@@ -77,7 +99,7 @@ const _field = ground_arr[index]
                       : 'text-dark-42'
                   }   ring-2 `}
                 >
-                  <h6 className={' font-semibold text-xl   '} style={{ wordBreak: 'break-word' }}>
+                  <h6 className={' font-semibold text-xl  capitalize '} style={{ wordBreak: 'break-word' }}>
                     {!is_active && field}
                   </h6>
                 </button>
