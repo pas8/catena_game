@@ -34,10 +34,15 @@ const Home: NextPage = () => {
 
   const [state, setState] = useState({
     is_game_started: false,
+    is_timer_started: false,
     is_trying_to_connect: false,
     board: [] as string[],
     activated_fields: [] as number[],
     ground_count: 5,
+    time_to_move: 4,
+    interval: null as any,
+    count_of_each_team_fields: 8,
+    team_move_order: [] as string[],
     percent_of_teams_fields: 60,
     is_game_in_creating_process: false,
     teams: {
@@ -65,11 +70,11 @@ const Home: NextPage = () => {
 
     //@ts-ignore
     const random_ground_arr = ground_arr.randomize();
-    return random_ground_arr;
+    return [random_ground_arr, count_of_each_team_fields];
   };
 
   const handle_genegate_preview = () => {
-    const random_ground_arr = use_genegate_ground_arr();
+    const [random_ground_arr] = use_genegate_ground_arr();
 
     setState((state) => ({ ...state, random_ground_arr }));
     set_is_in_preview_mode(true);
@@ -87,7 +92,7 @@ const Home: NextPage = () => {
   };
 
   const handle_create_game_room = () => {
-    const random_ground_arr = use_genegate_ground_arr();
+    const [random_ground_arr, count_of_each_team_fields] = use_genegate_ground_arr();
     const board = generate_board(state.ground_count * state.ground_count);
 
     setState((state) => ({
@@ -95,6 +100,7 @@ const Home: NextPage = () => {
       is_game_in_creating_process: false,
       is_game_started: true,
       random_ground_arr,
+      count_of_each_team_fields,
       board,
     }));
 
@@ -106,7 +112,6 @@ const Home: NextPage = () => {
       })
     );
   };
-
   const handle_try_to_connect = () => {
     setState((state) => ({ ...state, is_trying_to_connect: true }));
   };
@@ -123,9 +128,11 @@ const Home: NextPage = () => {
     );
   };
   const [room_id, set_room_id] = useState('');
+
   const [is_sign_as_player, set_is_sign_as_player] = useState(false);
 
   const [awaiting_users, set_awaiting_users] = useState([] as string[]);
+  const [connected_users, set_connected_users] = useState([] as string[]);
 
   useEffect(() => {
     client.onopen = () => {
@@ -145,7 +152,12 @@ const Home: NextPage = () => {
           return set_awaiting_users((p) => [...p, data.user_id]);
         }
         case 'resolve_acsess': {
-          setState((state) => ({ ...state, random_ground_arr: data.ground, is_trying_to_connect: false }));
+          setState((state) => ({
+            ...state,
+            random_ground_arr: data.ground,
+            is_trying_to_connect: false,
+            ground_count: Math.sqrt(data.ground.length),
+          }));
           return set_is_sign_as_player(true);
         }
         case 'reject_acsess': {
@@ -182,6 +194,7 @@ const Home: NextPage = () => {
       })
     );
     set_awaiting_users((arr) => arr.filter((__) => __ !== user_id));
+    set_connected_users((arr) => arr.filter((__) => __ !== user_id));
   };
 
   const handle_resolve_user = (user_id: string) => {
@@ -194,6 +207,7 @@ const Home: NextPage = () => {
       })
     );
     set_awaiting_users((arr) => arr.filter((__) => __ !== user_id));
+    set_connected_users((arr) => [...arr, user_id]);
   };
 
   const default_props = {
@@ -201,6 +215,42 @@ const Home: NextPage = () => {
     teams: state.teams,
     ground_count: state.ground_count,
   };
+  useEffect(() => {
+    set_timer_propertyies((_state) => ({ ..._state, left: state.time_to_move * 1000 * 60 }));
+  }, [state.time_to_move]);
+
+  const [timer_propertyies, set_timer_propertyies] = useState({
+    team_move_name: '',
+    left: 8,
+  });
+
+  const set_next_team_move = () => {
+    const team_move_name =
+      state.team_move_order[state.team_move_order.findIndex((__) => __ === timer_propertyies.team_move_name) + 1];
+    set_timer_propertyies((_state) => ({ ..._state, team_move_name, left: state.time_to_move * 1000 * 60 }));
+  };
+
+  const start_timer = () => {
+    const is_last = timer_propertyies.team_move_name === state.team_move_order[state.team_move_order.length - 1];
+
+    if (!timer_propertyies.team_move_name || is_last) {
+      set_timer_propertyies((_state) => ({ ..._state, team_move_name: state.team_move_order[0] }));
+    } else {
+      set_next_team_move();
+    }
+
+    const inverval = setInterval(() => {
+      set_timer_propertyies((state) => ({ ...state, left: state.left - 1000 }));
+    }, 1000);
+
+    setTimeout(() => {
+      clearInterval(inverval);
+      toast('Time left! please chose fields, and then click to button', { theme: 'colored', type: 'info' });
+      set_next_team_move();
+    }, state.time_to_move * 1000 * 60);
+    return inverval;
+  };
+
   return (
     <Container>
       <div className={'min-h-screen p-10 items-center flex justify-center'}>
@@ -250,7 +300,7 @@ const Home: NextPage = () => {
               'flex flex-col gap-4 bg-secondary-200 bg-opacity-5 p-4 ring-2 ring-secondary-600 ring-opacity-40  rounded-xl'
             }
           >
-            <h2 className={'font-bold	text-secondary-200 text-5xl'}>id: {room_id}</h2>
+            <h2 className={'font-bold	text-secondary-200 text-5xl'}>id: {connect_room_id}</h2>
             <div className={'w-96 h-96 '}>
               <Ground {...default_props} />
             </div>
@@ -264,21 +314,132 @@ const Home: NextPage = () => {
             }
           >
             <h2 className={'font-bold	text-secondary-200 text-5xl'}>id: {room_id}</h2>
-            <div className={''}>
+            <div className={'flex flex-col gap-2'}>
+              {state.is_timer_started ? (
+                <div
+                  className={
+                    'flex items-center bg-secondary-200 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40  p-2 justify-between rounded-2xl  '
+                  }
+                >
+                  <div className={'flex gap-2 flex-col'}>
+                    <h2 className={'font-bold	text-secondary-200 text-2xl'}>Team: {timer_propertyies.team_move_name}</h2>
+                    <h2 className={'font-bold	text-secondary-200 text-2xl'}>Left: {timer_propertyies.left}</h2>
+                  </div>
+                  <Button
+                    isSecondary
+                    _class={'text-4xl font-bold'}
+                    onClick={() => {
+                      clearInterval(state.interval);
+                      set_next_team_move();
+                      const interval = start_timer();
+
+                      setState({ ...state, is_timer_started: true, interval });
+                    }}
+                    rounded={'3xl'}
+                  >
+                    &#187;
+                  </Button>
+                </div>
+              ) : (
+                <div
+                  className={
+                    'flex gap-2 flex-col bg-primary-100 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40  p-2 justify-center rounded-2xl  '
+                  }
+                >
+                  <h2 className={'font-bold	text-secondary-100 text-3xl'}>Chose first move team:</h2>
+                  <div className={'flex gap-2 items-center flex-wrap'}>
+                    {Object.entries(state.teams).map(([name, _color]) => {
+                      const is_active = state.team_move_order.includes(name);
+                      const background = is_active ? 'transparent' : _color;
+                      const color = is_active ? _color : 'transparent';
+
+                      return (
+                        <button
+                          key={'chose' + name}
+                          className={'rounded-2xl w-20 h-20 flex items-center justify-center font-bold text-2xl '}
+                          onClick={() =>
+                            setState((state) => ({
+                              ...state,
+                              team_move_order: state.team_move_order.includes(name)
+                                ? state.team_move_order.filter((_) => _ !== name)
+                                : [...state.team_move_order, name],
+                            }))
+                          }
+                          style={{ background, border: '4px solid ', borderColor: 'currentcolor', color }}
+                        >
+                          {is_active && state.team_move_order.findIndex((__) => __ === name) + 1}
+                        </button>
+                      );
+                    })}
+                    {state.team_move_order.length === Object.keys(state.teams).length && (
+                      <Button
+                        _class={'h-20'}
+                        isSecondary
+                        rounded={'2xl'}
+                        isContained
+                        onClick={() => {
+                          const interval = start_timer();
+                          setState({ ...state, is_timer_started: true, interval });
+                        }}
+                      >
+                        Ready for start!
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {awaiting_users.map((id) => (
-                <div key={id} className={'flex items-center gap-2 p-2 border-2 border-secondary-200 rounded-xl'}>
+                <div
+                  key={id}
+                  className={'flex  gap-2 p-2 border-2 border-secondary-200 rounded-xl justify-between items-center'}
+                >
                   <h2 className={'font-bold	text-secondary-100 text-1xl'}>{id}</h2>
-                  <button onClick={() => handle_reject_user(id)}>{close_svg}</button>
-                  <button onClick={() => handle_resolve_user(id)}>{success_svg}</button>
+                  <div className={'flex gap-1 items-center'}>
+                    <button onClick={() => handle_reject_user(id)}>{close_svg}</button>
+                    <button onClick={() => handle_resolve_user(id)}>{success_svg}</button>
+                  </div>
                 </div>
               ))}
-              <Board
-                board={state.board}
-                room_id={room_id}
-                {...default_props}
-                activated_fields={state.activated_fields}
-              />
             </div>
+
+            <Board
+              board={state.board}
+              room_id={room_id}
+              {...default_props}
+              activated_fields={state.activated_fields}
+              on_click_of_death={() => {
+                toast(`WASTED! ${timer_propertyies.team_move_name} destoyed this game!`, { theme: 'dark', type: 'error' });
+              }}
+              on_click_of_placeholder={() => {
+                clearInterval(state.interval);
+                set_next_team_move();
+                const interval = start_timer();
+                setState({ ...state, interval });
+
+                toast('Placeholder was actived, next team have to move  ', { theme: 'colored', type: 'info' });
+              }}
+            />
+            {!!connected_users.length && (
+              <div className={'flex-col flex gap-2 border--2 border-primary-200 rounded-2xl'}>
+                <h4 className={'font-bold	text-primary-200 text-2xl'}> Connected users (click to remove)</h4>
+                <div className={'flex flex-wrap gap-1 '}>
+                  {connected_users.map((id) => {
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => handle_reject_user(id)}
+                        className={
+                          'text-primary-300 rounded-xl border-2 border-primary-2  p-2 hover:bg-primary-300 hover:text-dark-42 hover:bg-opacity-60'
+                        }
+                      >
+                        {id}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -303,6 +464,12 @@ const Home: NextPage = () => {
                     title: `${state.percent_of_teams_fields} percent of team fields`,
                     min: 42,
                     max: 80,
+                  },
+                  {
+                    key: 'time_to_move',
+                    title: `${state.time_to_move} minutes  to move`,
+                    min: 1,
+                    max: 10,
                   },
                 ].map(({ key, title, ...props }) => (
                   <div className={'flex flex-col gap-1 border-b-2 border-secondary-300 pb-4'} key={key}>
