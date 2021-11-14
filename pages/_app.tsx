@@ -8,7 +8,7 @@ import ToastifyLayout from '../src/layouts/ToastifyLayout';
 
 const _App = ({ Component, pageProps }: AppProps) => {
   return (
-    <div className='dark:bg-dark-42  min-h-screen'>
+    <div className='dark:bg-dark-42  min-h-screen '>
       <ComposeLayouts layouts={[ProgressLayout, HeaderLayout, ToastifyLayout]}>
         <Component {...pageProps} />
       </ComposeLayouts>
