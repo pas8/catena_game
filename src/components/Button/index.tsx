@@ -30,8 +30,8 @@ const Button: FC<{
       className={`rounded-${rounded}   py-3 px-6 p relative overflow-hidden text-xl duration-500  ring-${variant}-400 ring-opacity-50
         ${
           isContained
-            ? `bg-gradient-to-r from-${variant}-900 to-dark-42 hover:from-dark-80  ring-2  hover:to-${variant}-600  hover:border-${variant}-300  dark:text-white-42 hover:via-${variant}-800  border-2  border-${variant}-600`
-            : `border-4 border-${variant}-400  dark:text-white-42 hover:bg-${variant}-900  bg-opacity-20 ring-2`
+            ? `bg-gradient-to-r from-${variant}-900 to-dark-42 hover:from-dark-80  ring-2  hover:to-${variant}-600  hover:border-${variant}-300  text-white-42 hover:via-${variant}-800  border-2  border-${variant}-600`
+            : `border-4 border-${variant}-400  text-white-42 hover:bg-${variant}-900  bg-opacity-20 ring-2`
         } ${_class || ''}`}
       {...props}
       onClick={on_click}
