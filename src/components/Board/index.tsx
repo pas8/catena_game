@@ -29,6 +29,7 @@ const Board: FC<{
   on_click_of_death,
   on_click_of_placeholder,
 }) => {
+
   Object.keys(teams).map((key) => {
     const indexed_with_keys_arr = ground_arr.map((__, idx) => (key === __ ? idx : __));
     const value = indexed_with_keys_arr.filter((__) => !isNaN(+__));
