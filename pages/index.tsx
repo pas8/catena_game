@@ -508,9 +508,8 @@ const Home: NextPage = () => {
                     </div>
                   ) : (
                     <div
-                      className={
-                        'flex gap-2 flex-col bg-secondary-100 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40  p-2 justify-center rounded-2xl  '
-                      }
+                      className={`
+                        flex gap-2 flex-col bg-secondary-100 bg-opacity-20 ring-2 ring-secondary-400 ring-opacity-40  p-2 justify-center rounded-2xl  `}
                     >
                       <h2 className={'font-bold	text-secondary-100 text-3xl'}>Chouse order of team moving:</h2>
                       <div className={'flex gap-2 items-center flex-wrap'}>
@@ -559,7 +558,7 @@ const Home: NextPage = () => {
                     <div
                       key={id}
                       className={
-                        'flex  gap-2 p-2 border-2 border-secondary-200 rounded-xl justify-between items-center'
+                        'flex  gap-2  bg-secondary-200 bg-opacity-20 p-2 rounded-xl  justify-between items-center'
                       }
                     >
                       <h2 className={'font-bold	text-secondary-100 text-1xl'}>{id}</h2>
@@ -595,7 +594,17 @@ const Home: NextPage = () => {
                   />
                 )}
                 {!!connected_users.length && (
-                  <div className={'flex-col flex gap-2 border--2 border-primary-200 rounded-2xl'}>
+                  <div
+                    className={`
+                  
+                  ${
+                    is_full_screen
+                      ? 'bg-primary-200 bg-opacity-20 p-2 rounded-xl  flex-wrap items-center justify-between'
+                      : ' flex-col'
+                  }
+                  
+                  flex gap-2  rounded-2xl`}
+                  >
                     <h4 className={'font-bold	text-primary-200 text-2xl'}> Connected users (click to remove)</h4>
                     <div className={'flex flex-wrap gap-1 '}>
                       {connected_users.map((id) => {
