@@ -324,6 +324,8 @@ const Home: NextPage = () => {
     return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
   };
   const [is_full_screen, set_is_full_screen] = useState(false);
+  const [is_connected_users_hidden, set_is_connected_users_hidden] = useState(false);
+
   return (
     <>
       <Head>
@@ -443,6 +445,7 @@ const Home: NextPage = () => {
                     isContained
                     isSecondary
                     onClick={() => {
+                      set_is_connected_users_hidden(false)
                       set_is_full_screen((p) => !p);
                     }}
                   >
@@ -593,7 +596,7 @@ const Home: NextPage = () => {
                     }}
                   />
                 )}
-                {!!connected_users.length && (
+                {!!connected_users.length && !is_connected_users_hidden && (
                   <div
                     className={`
                   
@@ -605,7 +608,15 @@ const Home: NextPage = () => {
                   
                   flex gap-2  rounded-2xl`}
                   >
-                    <h4 className={'font-bold	text-primary-200 text-2xl'}> Connected users (click to remove)</h4>
+                    <button
+                      className={'font-bold	text-primary-200 text-2xl '}
+                      style={{width:'fit-content'}}
+                      onClick={() => {
+ set_is_connected_users_hidden(true) 
+                      }}
+                    >
+                      Connected users (click to remove)
+                    </button>
                     <div className={'flex flex-wrap gap-1 '}>
                       {connected_users.map((id) => {
                         return (
