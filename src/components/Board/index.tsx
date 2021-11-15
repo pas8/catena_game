@@ -29,7 +29,6 @@ const Board: FC<{
   on_click_of_death,
   on_click_of_placeholder,
 }) => {
-
   Object.keys(teams).map((key) => {
     const indexed_with_keys_arr = ground_arr.map((__, idx) => (key === __ ? idx : __));
     const value = indexed_with_keys_arr.filter((__) => !isNaN(+__));
@@ -40,24 +39,34 @@ const Board: FC<{
     return [key, value];
   });
   const ref = useRef(null as any);
-  const [height, set_height] = useState(80);
+  // const [height, set_height] = useState(80);
 
-  useEffect(() => {
-    if (is_full_screen && !!ref?.current?.offsetHeight && height === 80) {
-      set_height(ref?.current?.offsetHeight / ground_count - 5);
-    }
-  }, [ref, is_full_screen, height]);
+  // useEffect(() => {
+  //   if (is_full_screen && !!ref?.current?.offsetHeight && height === 80) {
+  //     set_height(ref?.current?.offsetHeight / ground_count - 5);
+  //   }
+  // }, [ref, is_full_screen, height]);
   return (
     <div
       ref={ref}
       className={` bg-dark-42 bg-opacity-60  ring-2 ring-primary-400 ring-opacity-20  ${
         is_full_screen ? 'p-0 overflow-hidden rounded-xl' : 'p-2'
       }`}
-      style={{ height: 'min-content ', flexGrow: 1 }}
+      style={{
+        height: 'min-content ',
+        flexGrow: 1,
+        // minHeight: height === 80 ? '0px' : height + 5 * ground_count + 'px',
+      }}
     >
-      <div className={'flex flex-col gap-2 p-0 '}>
+      <div className={'flex flex-col gap-2 p-0 h-full'}>
         {Array.from({ length: ground_count }, (__, idx) => (
-          <div key={idx + 'row'} className={'flex gap-2 '}>
+          <div
+            key={idx + 'row'}
+            className={'flex gap-2 '}
+            style={{
+              height: 100 / ground_count + '%',
+            }}
+          >
             {Array.from({ length: ground_count }, (_, i) => {
               const index = idx * ground_count + i;
               const field: any = board[index];
@@ -78,7 +87,7 @@ const Board: FC<{
               const is_death = _field === 'DEATH';
 
               const styling = is_full_screen
-                ? { height }
+                ? {}
                 : {
                     minWidth: 80,
                     minHeight: 100,
