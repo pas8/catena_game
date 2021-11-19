@@ -445,7 +445,7 @@ const Home: NextPage = () => {
                     isContained
                     isSecondary
                     onClick={() => {
-                      set_is_connected_users_hidden(false)
+                      set_is_connected_users_hidden(false);
                       set_is_full_screen((p) => !p);
                     }}
                   >
@@ -610,9 +610,9 @@ const Home: NextPage = () => {
                   >
                     <button
                       className={'font-bold	text-primary-200 text-2xl '}
-                      style={{width:'fit-content'}}
+                      style={{ width: 'fit-content' }}
                       onClick={() => {
- set_is_connected_users_hidden(true) 
+                        set_is_connected_users_hidden(true);
                       }}
                     >
                       Connected users (click to remove)
